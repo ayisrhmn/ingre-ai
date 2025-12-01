@@ -1,0 +1,9 @@
+# *
+User-agent: *
+Allow: /
+
+# Host
+Host: https://ingre-ai.vercel.app
+
+# Sitemaps
+Sitemap: https://ingre-ai.vercel.app/sitemap.xml
