@@ -20,8 +20,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "IngreAI — AI-Powered Ingredient Scanner & Recipe Generator",
-  description:
-    "Scan your ingredients and get smart recipe suggestions instantly. IngreAI uses camera-based ingredient detection and Google Gemini AI to create personalized dishes you can cook at home.",
+  description: "Scan your ingredients and get smart recipe suggestions instantly.",
   applicationName: "IngreAI — AI-Powered Ingredient Scanner & Recipe Generator",
   metadataBase: new URL("https://ingre-ai.vercel.app"),
   authors: [{ name: "Muhammad Fariz Rahman", url: "https://ayisrhmn.vercel.app" }],
@@ -36,8 +35,7 @@ export const metadata: Metadata = {
   ],
   openGraph: {
     title: "IngreAI — AI-Powered Ingredient Scanner & Recipe Generator",
-    description:
-      "Scan your ingredients and get smart recipe suggestions instantly. IngreAI uses camera-based ingredient detection and Google Gemini AI to create personalized dishes you can cook at home.",
+    description: "Scan your ingredients and get smart recipe suggestions instantly.",
     url: "https://ingre-ai.vercel.app",
     siteName: "IngreAI — AI-Powered Ingredient Scanner & Recipe Generator",
     images: [
@@ -53,8 +51,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "IngreAI — AI-Powered Ingredient Scanner & Recipe Generator",
-    description:
-      "Scan your ingredients and get smart recipe suggestions instantly. IngreAI uses camera-based ingredient detection and Google Gemini AI to create personalized dishes you can cook at home.",
+    description: "Scan your ingredients and get smart recipe suggestions instantly.",
     images: [
       {
         url: "https://ingre-ai.vercel.app/og-image.png",

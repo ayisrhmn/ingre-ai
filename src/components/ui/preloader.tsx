@@ -34,7 +34,7 @@ export function Preloader() {
     <AnimatePresence mode="wait">
       {isLoading && (
         <motion.div
-          className="fixed inset-0 z-[9999] flex items-center justify-center bg-background"
+          className="fixed inset-0 z-9999 flex items-center justify-center bg-background"
           exit={{ y: "-100vh", transition: { duration: 0.8, ease: [0.76, 0, 0.24, 1] } }}
         >
           <div className="flex flex-col items-center gap-4">

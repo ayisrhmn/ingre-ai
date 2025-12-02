@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "dev": "next dev -p 2905 --turbopack",
+    "dev": "next dev -p 3029 --turbopack",
     "build": "next build --turbopack",
     "start": "next start",
     "shadcn-add": "bunx --bun shadcn@latest add",
@@ -25,6 +25,7 @@
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "react-markdown": "^10.1.0",
+    "react-webcam": "^7.2.0",
     "rehype-autolink-headings": "^7.1.0",
     "rehype-katex": "^7.0.1",
     "rehype-raw": "^7.0.0",
