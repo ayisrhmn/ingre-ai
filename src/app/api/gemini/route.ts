@@ -1,6 +1,33 @@
 import { GoogleGenAI, HarmBlockThreshold, HarmCategory, MediaResolution } from "@google/genai";
 import { NextRequest, NextResponse } from "next/server";
 
+async function retryWithBackoff<T>(
+  fn: () => Promise<T>,
+  maxRetries: number = 3,
+  initialDelay: number = 1000,
+): Promise<T> {
+  let lastError: Error | null = null;
+
+  for (let i = 0; i < maxRetries; i++) {
+    try {
+      return await fn();
+    } catch (error: any) {
+      lastError = error;
+
+      // Check if it's a rate limit error
+      if (error.status === 429 && i < maxRetries - 1) {
+        const delay = initialDelay * Math.pow(2, i); // Exponential backoff
+        console.log(`Rate limit hit. Retrying in ${delay}ms... (Attempt ${i + 1}/${maxRetries})`);
+        await new Promise((resolve) => setTimeout(resolve, delay));
+      } else {
+        throw error;
+      }
+    }
+  }
+
+  throw lastError;
+}
+
 export async function POST(req: NextRequest) {
   try {
     const { input, image } = await req.json();
@@ -52,16 +79,19 @@ export async function POST(req: NextRequest) {
       parts.push({ text: input });
     }
 
-    const stream = await ai.models.generateContentStream({
-      model: "gemini-2.0-flash-lite",
-      config,
-      contents: [
-        {
-          role: "user",
-          parts,
-        },
-      ],
-    });
+    // Use retry mechanism for rate limit handling
+    const stream = await retryWithBackoff(() =>
+      ai.models.generateContentStream({
+        model: "gemini-2.0-flash-lite",
+        config,
+        contents: [
+          {
+            role: "user",
+            parts,
+          },
+        ],
+      }),
+    );
 
     const encoder = new TextEncoder();
 
@@ -80,8 +110,24 @@ export async function POST(req: NextRequest) {
         "Transfer-Encoding": "chunked",
       },
     });
-  } catch (err) {
-    console.error(err);
-    return NextResponse.json({ error: "Server Error" }, { status: 500 });
+  } catch (err: any) {
+    console.error("Gemini API Error:", err);
+
+    // Handle rate limit error
+    if (err.status === 429) {
+      return NextResponse.json(
+        {
+          error: "Rate limit exceeded. Please wait a moment and try again.",
+          retryAfter: 60,
+        },
+        { status: 429 },
+      );
+    }
+
+    // Handle other errors
+    return NextResponse.json(
+      { error: err.message || "Server Error" },
+      { status: err.status || 500 },
+    );
   }
 }

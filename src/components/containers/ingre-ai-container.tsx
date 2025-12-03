@@ -38,6 +38,21 @@ export function IngreAIContainer() {
   const [selectedIngredients, setSelectedIngredients] = useState<string[]>([]);
   const [recipes, setRecipes] = useState<Recipe[]>([]);
 
+  // Helper function to handle API responses
+  const handleApiResponse = async (response: Response) => {
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+
+      if (response.status === 429) {
+        throw new Error("Rate limit exceeded (429). Please wait before trying again.");
+      }
+
+      throw new Error(errorData.error || `API error: ${response.status}`);
+    }
+
+    return response;
+  };
+
   // Navigation handlers
   const handleStartScanning = () => {
     setCurrentScreen("camera");
@@ -59,9 +74,7 @@ export function IngreAIContainer() {
         }),
       });
 
-      if (!response.ok) {
-        throw new Error("Failed to analyze image");
-      }
+      await handleApiResponse(response);
 
       // Read the streaming response
       const reader = response.body?.getReader();
@@ -95,9 +108,16 @@ export function IngreAIContainer() {
 
       setDetectedItems(items);
       setCurrentScreen("confirmation");
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error detecting ingredients:", error);
-      alert("Failed to detect ingredients. Please try again.");
+
+      // Check if it's a rate limit error
+      if (error.message && error.message.includes("429")) {
+        alert("Too many requests. Please wait a moment before trying again.");
+      } else {
+        alert("Failed to detect ingredients. Please try again.");
+      }
+
       setCurrentScreen("camera");
     }
   };
@@ -118,9 +138,7 @@ export function IngreAIContainer() {
         }),
       });
 
-      if (!response.ok) {
-        throw new Error("Failed to generate recipes");
-      }
+      await handleApiResponse(response);
 
       // Read the streaming response
       const reader = response.body?.getReader();
@@ -152,9 +170,16 @@ export function IngreAIContainer() {
 
       setRecipes(recipesWithIds);
       setCurrentScreen("recipe");
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error generating recipes:", error);
-      alert("Failed to generate recipes. Please try again.");
+
+      // Check if it's a rate limit error
+      if (error.message && error.message.includes("429")) {
+        alert("Too many requests. Please wait a moment before trying again.");
+      } else {
+        alert("Failed to generate recipes. Please try again.");
+      }
+
       setCurrentScreen("confirmation");
     }
   };
